@@ -1,0 +1,158 @@
+<div class="title">
+  <h1>Invoice</h1>
+</div>
+<div class="container">
+  <form name="invoiceForm" [formGroup]="invoiceForm" novalidate>
+    <mat-form-field style="float: left;">
+      <input matInput placeholder="Company Name" formControlName="CompanyName">
+    </mat-form-field>
+    <mat-form-field style="float: right;">
+      <input matInput [matDatepicker]="picker" placeholder="Date"  formControlName="date" required  (click)="picker.open()">
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+    <div class="clear"></div>
+    <mat-form-field style="float: left;">
+      <input matInput placeholder="Address" formControlName="address">
+    </mat-form-field>
+    <mat-form-field style="float: right;">
+      <input matInput placeholder="Receipt No" formControlName="receiptNo">
+    </mat-form-field>
+    <div class="clear"></div>
+    <mat-form-field>
+      <input matInput placeholder="Zip Code" formControlName="zipCode">
+    </mat-form-field>
+    <div class="clear"></div>
+    <div class="left">
+      <h4>Bill To</h4>
+      <mat-form-field>
+        <input matInput placeholder="Contact Name" formControlName="contactName">
+      </mat-form-field>
+      <br>
+      <mat-form-field>
+        <input matInput placeholder="Client Company Name" formControlName="clientCompanyName">
+      </mat-form-field>
+      <br>
+      <mat-form-field>
+        <input matInput placeholder="Address" formControlName="billAddress">
+      </mat-form-field>
+      <br>
+      <mat-form-field>
+        <input matInput placeholder="Phone" formControlName="phone">
+      </mat-form-field>
+      <br>
+      <mat-form-field>
+        <input matInput placeholder="Email" formControlName="email">
+      </mat-form-field>
+    </div>
+    <div class="right">
+      <h4>Ship To</h4>
+      <mat-form-field>
+        <input matInput placeholder="Name/Dept" formControlName="nameDept">
+      </mat-form-field>
+      <br>
+      <mat-form-field>
+        <input matInput placeholder="Client Company Name" formControlName="shipClientCompanyName">
+      </mat-form-field>
+      <br>
+      <mat-form-field>
+        <input matInput placeholder="Address" formControlName="shipAddress">
+      </mat-form-field>
+      <br>
+      <mat-form-field>
+        <input matInput placeholder="Phone" formControlName="shipPhone">
+      </mat-form-field>
+    </div>
+    <div class="clear"></div>
+    <mat-divider></mat-divider>
+
+    <div>
+      <h3>Add Item</h3>
+      <form name="itemForm" [formGroup]="itemForm" novalidate>
+        <mat-form-field>
+          <input matInput placeholder="Description" formControlName="description">
+        </mat-form-field>
+
+        <mat-form-field>
+          <input matInput placeholder="QTY" formControlName="qty" (keyup)="calcTotal()">
+        </mat-form-field>
+
+        <mat-form-field>
+          <input matInput placeholder="Unit Price" formControlName="unitPrice" (keyup)="calcTotal()">
+        </mat-form-field>
+
+        <mat-form-field>
+          <input matInput placeholder="Total" formControlName="total">
+        </mat-form-field>
+        <br>
+        <button *ngIf="this.del" mat-raised-button color="primary" (click)="addItem()" [disabled]="itemForm.invalid">Add</button>
+      </form>
+      <table #table mat-table [dataSource]="dataSource"  matSort class="mat-elevation-z8" style="margin-top:15px;">
+
+        <ng-container matColumnDef="desc">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Description </th>
+          <td mat-cell *matCellDef="let element"> {{element.description}} </td>
+        </ng-container>
+        <ng-container matColumnDef="qty">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> QTY </th>
+          <td mat-cell *matCellDef="let element"> {{element.qty}} </td>
+        </ng-container>
+        <ng-container matColumnDef="unitPrice">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Unit Price </th>
+          <td mat-cell *matCellDef="let element"> {{element.unitPrice}} </td>
+        </ng-container>
+        <ng-container matColumnDef="total">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Total </th>
+          <td mat-cell *matCellDef="let element"> {{element.total}} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="delete">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let element;let i = index;">
+                <mat-icon *ngIf="this.del" (click)="deleteRow(i)">delete</mat-icon>
+               </td>
+          </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns sticky: true"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </div>
+    <mat-divider></mat-divider>
+    <div class="left">
+      <mat-form-field>
+        <textarea style="min-height: 400px;" matInput placeholder="Notes & Comments" formControlName="notes"></textarea>
+      </mat-form-field>
+    </div>
+    <div class="right">
+      <mat-form-field>
+        <input matInput placeholder="SubTotal" formControlName="subTotal">
+      </mat-form-field>
+      <br>
+      <mat-form-field>
+        <input matInput placeholder="Discount" formControlName="discount" (keyup)="calcDiscount()">
+      </mat-form-field>
+      <br>
+      <mat-form-field>
+        <input matInput placeholder="SubTotal Less Discount" formControlName="subLessDiscount">
+      </mat-form-field>
+      <br>
+      <mat-form-field>
+        <input matInput placeholder="Tax Rate" formControlName="taxRate" (keyup)=calcTax()>
+      </mat-form-field>
+      <br>
+      <mat-form-field>
+        <input matInput placeholder="Total Tax" formControlName="totalTax">
+      </mat-form-field>
+      <br>
+      <mat-form-field>
+        <input matInput placeholder="Shipping/Handling" formControlName="shipping" (keyup)=calcShipping()>
+      </mat-form-field>
+      <br>
+      <mat-form-field>
+        <input matInput placeholder="Balance Paid" formControlName="balancePaid">
+      </mat-form-field>
+    </div>
+<div class="clear"></div>
+<button mat-raised-button color="primary" (click)="export()" >Export</button>
+<button mat-raised-button color="primary" (click)="import()" >Import</button>
+  </form>
+</div>
